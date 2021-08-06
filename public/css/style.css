@@ -1,0 +1,42 @@
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #1e752a;
+}
+
+li {
+	display: block;
+	float: right;
+}
+
+li a {
+	font-size: 75px;
+	display: block;
+	color: #d4b000;
+	padding: 20px 50px;
+	text-decoration: none;
+}
+
+.pd_drop {
+	visibility: hidden;
+	opacity: 0;
+	position: absolute;
+	transition: all 0.5s ease;
+	margin-top: 1rem;
+	left: 0;
+	display: none;
+}
+
+ul li .pd_drop:hover > ul,
+.pd_drop:hover {
+	visibility: visible;
+	opacity: 1;
+	display: block;
+}
+
+ul li ul li {
+	clear: both;
+	width: 100%;
+}

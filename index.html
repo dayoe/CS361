@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/css/style.css" text="text/css">
+  <title>Scrooge</title>
+ </head>
+ <body>
+    <div class="nav">
+        <ul>
+            <li style="float: left;"><a href="/">Scrooge</a></li>
+            <li><a href="/goals">Goals</a></li>
+            <li><a href="/expenses">Expenses</a></li>
+            <li><a href="#">Payday</a>
+                <div class="pd_drop">
+                    <form>
+                        <label for="income">Enter your paycheck amount</label>
+                        <input type="number" id="income">
+                        <button>Submit</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <br>
+    <br>
+    <div class="graph">
+        <p id="graph"></p>
+    </div>
+ </body>
+</html>
