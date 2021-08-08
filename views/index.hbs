@@ -1,0 +1,19 @@
+<!-- Loading javascript file -->
+<script src="/js/home.js"></script>
+
+<!-- Top menu bar -->
+<div class="dropdown">
+    <button class="dropbtn" onclick="dropDown()">PayDay!</button>
+    <div class="dropdown-content" id="dropdown-content">
+        <form>
+            <label for="payday-input">Put in your income here: </label>
+            <input type="number" id="payday-input" name="payday-input">
+            <button onclick="dbDeposit()">Hooray!</button>
+        </form>
+    </div>
+</div>
+<br>
+<br>
+<div class="graph">
+    <p id="graph"></p>
+</div>
