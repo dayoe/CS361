@@ -5,10 +5,12 @@
 <div class="dropdown">
     <button class="dropbtn" onclick="dropDown()">PayDay!</button>
     <div class="dropdown-content" id="dropdown-content">
-        <form>
+        <form id="addIncome" action="/income" method="POST">
+            <label for="label">Label: </label>
+            <input type="text" id="incomeLabel" name="incomeLabel">
             <label for="payday-input">Put in your income here: </label>
-            <input type="number" id="payday-input" name="payday-input">
-            <button onclick="dbDeposit()">Hooray!</button>
+            <input type="number" id="incomeAmount" name="incomeAmount">
+            <button onclick="undoIncome()">Hooray!</button>
         </form>
     </div>
 </div>

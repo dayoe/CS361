@@ -1,11 +1,11 @@
 
 
-//Toggles between showing and hiding the content
+// Toggles between showing and hiding the content
 function dropDown() {
     document.getElementById('dropdown-content').classList.toggle('show');
 }
 
-//Closing the menu if the user clicks out
+// Closing the menu if the user clicks out
 window.onclick = function(event) {
     if (!event.target.matches('.dropobtn')) {
         let drop_menu = document.getElementsByClassName('dropdown_content');
@@ -18,3 +18,8 @@ window.onclick = function(event) {
     }
 }
 
+// Undo option
+let undoIncomeWindow;
+function undoIncome() {
+    undoIncomeWindow = window.open('/income/undo' );
+}
