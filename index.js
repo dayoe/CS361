@@ -18,7 +18,7 @@ app.set('port', 3031);
 app.set('view engine', '.hbs')
 app.set('mysql', mysql)
 
-// Getting graph
+/*// Getting graph
 const data = JSON.stringify({
   "column":[{"type":"string","title":"Toppings"}, {"type":"number","title":"Slices"}],
   "row":[{"name":"Mushrooms","value":"3"},{"name":"Onions","value":"1"},{"name":"Olives","value":"2"}]
@@ -49,7 +49,7 @@ req.on('error', error => {
 })
 
 req.write(data);
-req.end();
+req.end(); */
 
 // Routing
 app.get('/', function(req, res) {

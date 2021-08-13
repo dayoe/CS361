@@ -23,3 +23,15 @@ let undoIncomeWindow;
 function undoIncome() {
     undoIncomeWindow = window.open('/income/undo' );
 }
+
+// Loading graph
+window.addEventListener('load', (event) => {
+    let req = new XMLHttpRequest();
+    let payload = {
+        "column":[{"type":"string","title":"Toppings"}, {"type":"number","title":"Slices"}],
+        "row":[{"name":"Mushrooms","value":"3"},{"name":"Onions","value":"1"},{"name":"Olives","value":"2"}]
+    };
+    req.open('POST', 'http://flip2.engr.oregonstate.edu:3003/', false);
+    req.setRequestHeader('Content-Type', 'application/json');
+    req.send(JSON.stringify(payload));
+})
