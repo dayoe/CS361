@@ -1,10 +1,11 @@
 //Establishing required modules
 const mysql = require('./public/database/database_con.js');
-const agent = require('https-agent');
 const express = require('express');
 const app = express();
 const handlebars = require('express-handlebars');
 const https = require('https');
+const fs = require('fs');
+const fetch = require('node-fetch');
 
 //Creating module settings
 app.use(express.static('public'));
@@ -53,7 +54,37 @@ req.end(); */
 
 // Routing
 app.get('/', function(req, res) {
+    /* XMLHttpRequest version
+    let XMLreq = new XMLHttpRequest();
+    let payload = {
+      "xaxis":{"title":"Age","min":"0","max":"15"},"yaxis":{"title":"Weight","min":"0","max":"15"},"points":"[8, 1],[4, 5]", "title":"Age vs. Weight comparison"
+    };
+    XMLreq.open('POST', 'http://flip2.engr.oregonstate.edu:3003/scatter', false);
+    XMLreq.setRequestHeader('Content-Type', 'application/json');
+    XMLreq.send(JSON.stringify(payload));
+    fs
 	res.render('index');
+     */
+
+    const body = {
+        "xaxis": {"title": "Time", "min": "-20", "max": "20"},
+        "yaxis": {"title": "Confidence", "min": "-20", "max": "20"},
+        "points": "[-10, 11],[-9, 8],[-8, 7],[-7, 3], [-6, 0], [-5, -3], [-4, -8], [-3, -15], [-2, -13], [0, -15], [2, -8], [5, 0]",
+        "title": "Confidence in myself over Time"
+    };
+
+    fetch('http://flip2.engr.oregonstate.edu:3003/scatter', {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {'Content-Type': 'application/json'},
+    })
+        .then(res => {
+            const dest = fs.createWriteStream('./public/img/chart.png');
+            res.body.pipe(dest);
+        })
+        .catch(err => console.error(err));
+
+    res.render('index');
 });
 
 

@@ -14,6 +14,7 @@
     "express-handlebars": "^5.3.3",
     "express-session": "^1.11.3",
     "https-agent": "^1.0.0",
-    "mysql": "^2.8.0"
+    "mysql": "^2.8.0",
+    "node-fetch": "^2.6.1"
   }
 }

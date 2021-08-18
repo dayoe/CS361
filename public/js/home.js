@@ -28,10 +28,13 @@ function undoIncome() {
 window.addEventListener('load', (event) => {
     let req = new XMLHttpRequest();
     let payload = {
-        "column":[{"type":"string","title":"Toppings"}, {"type":"number","title":"Slices"}],
-        "row":[{"name":"Mushrooms","value":"3"},{"name":"Onions","value":"1"},{"name":"Olives","value":"2"}]
+    "xaxis":{"title":"Age","min":"0","max":"15"},"yaxis":{"title":"Weight","min":"0","max":"15"},"points":"[8, 1],[4, 5]", "title":"Age vs. Weight comparison"
     };
-    req.open('POST', 'http://flip2.engr.oregonstate.edu:3003/', false);
+    req.open('POST', 'http://flip2.engr.oregonstate.edu:3003/scatter', false);
     req.setRequestHeader('Content-Type', 'application/json');
     req.send(JSON.stringify(payload));
+    console.log(req.responseText);
+    console.log('request has been sent')
+    let iframe = document.createElement('iframe');
+    iframe.setAttribute('src', req.responseText)
 })
