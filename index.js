@@ -19,61 +19,55 @@ app.set('port', 3031);
 app.set('view engine', '.hbs')
 app.set('mysql', mysql)
 
-/*// Getting graph
-const data = JSON.stringify({
-  "column":[{"type":"string","title":"Toppings"}, {"type":"number","title":"Slices"}],
-  "row":[{"name":"Mushrooms","value":"3"},{"name":"Onions","value":"1"},{"name":"Olives","value":"2"}]
-})
-
-const options = {
-  hostname: 'flip2.engr.oregonstate.edu',
-  port: 3003,
-  path: '/',
-  agent: new agent({ rejectUnauthorized: false }),
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Content-Length': data.length
-  }
-}
-
-const req = https.request(options, res => {
-  console.log('status code: ' + res.statusCode);
-
-  res.on('data', d => {
-    process.stdout.write(d)
-  })
-})
-
-req.on('error', error => {
-  console.error(error)
-})
-
-req.write(data);
-req.end(); */
-
 // Routing
 app.get('/', function(req, res) {
-    /* XMLHttpRequest version
-    let XMLreq = new XMLHttpRequest();
-    let payload = {
-      "xaxis":{"title":"Age","min":"0","max":"15"},"yaxis":{"title":"Weight","min":"0","max":"15"},"points":"[8, 1],[4, 5]", "title":"Age vs. Weight comparison"
-    };
-    XMLreq.open('POST', 'http://flip2.engr.oregonstate.edu:3003/scatter', false);
-    XMLreq.setRequestHeader('Content-Type', 'application/json');
-    XMLreq.send(JSON.stringify(payload));
-    fs
-	res.render('index');
+    // Gathering income amounts from DB
+    let query = 'SELECT * FROM `Income`';
+    let income;
+    sql = mysql.pool.query(query, function(error, results, fields) {
+        if(error) {
+            res.write(JSON.stringify(error));
+            res.end();
+        } else {
+            income = results;
+            console.log(results);
+            mysql.pool.end();
+        }
+    });
+    console.log(income);
+
+    /*
+    // Gathering income labels from DB
+    query = 'SELECT `label` FROM `Income`'
+    let incomeLabs;
+    sql = mysql.pool.query(query, function(error, results, fields) {
+        if(error) {
+            res.write(JSON.stringify(error));
+            res.end();
+        } else {
+            incomeLabs = results;
+        }
+    })
+    console.log(incomeLabs[0]);
+
      */
 
     const body = {
-        "xaxis": {"title": "Time", "min": "-20", "max": "20"},
-        "yaxis": {"title": "Confidence", "min": "-20", "max": "20"},
-        "points": "[-10, 11],[-9, 8],[-8, 7],[-7, 3], [-6, 0], [-5, -3], [-4, -8], [-3, -15], [-2, -13], [0, -15], [2, -8], [5, 0]",
-        "title": "Confidence in myself over Time"
+        column: [
+            { type: "string", title: "total income" },
+            { type: "number", title: "Slices" },
+        ],
+        row: [
+            { name: "${incomeLabs[0]}", value: "5" },
+            { name: "Onions", value: "1" },
+            { name: "Olives", value: "2" },
+            { name: "Zucchini", value: "1"},
+            { name: 'Bibimbap', value: '200'}
+        ],
+        option: { title: 'I sure hope this works!', width: '400', height: '350'}
     };
 
-    fetch('http://flip2.engr.oregonstate.edu:3003/scatter', {
+    fetch('http://flip2.engr.oregonstate.edu:3003/', {
         method: 'post',
         body: JSON.stringify(body),
         headers: {'Content-Type': 'application/json'},
