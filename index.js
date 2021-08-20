@@ -21,66 +21,84 @@ app.set('mysql', mysql)
 
 // Routing
 app.get('/', function(req, res) {
-    // Gathering income amounts from DB
-    let query = 'SELECT * FROM `Income`';
-    let income;
-    sql = mysql.pool.query(query, function(error, results, fields) {
-        if(error) {
-            res.write(JSON.stringify(error));
-            res.end();
-        } else {
-            income = results;
-            console.log(results);
-            mysql.pool.end();
-        }
-    });
-    console.log(income);
-
     /*
-    // Gathering income labels from DB
-    query = 'SELECT `label` FROM `Income`'
-    let incomeLabs;
-    sql = mysql.pool.query(query, function(error, results, fields) {
-        if(error) {
-            res.write(JSON.stringify(error));
-            res.end();
-        } else {
-            incomeLabs = results;
-        }
-    })
-    console.log(incomeLabs[0]);
+    // Gathering income amounts from DB
+    async function getIncomes() {
+        let query = 'SELECT `label`, `amount` FROM `Income`';
+        let income = [];
+        return new Promise((resolve, reject) => {
+            mysql.pool.query(query, function(error, results) {
+            if (error) {
+                reje
+            }
+        })
+
+            if(error) {
+                res.write(JSON.stringify(error));
+                res.end();
+            } else {
+                setIncomes(results);
+                //console.log(results);
+            }
+        });
+    }
+    getIncomes();
+    //console.log(income);
 
      */
 
-    const body = {
-        column: [
-            { type: "string", title: "total income" },
-            { type: "number", title: "Slices" },
-        ],
-        row: [
-            { name: "${incomeLabs[0]}", value: "5" },
-            { name: "Onions", value: "1" },
-            { name: "Olives", value: "2" },
-            { name: "Zucchini", value: "1"},
-            { name: 'Bibimbap', value: '200'}
-        ],
-        option: { title: 'I sure hope this works!', width: '400', height: '350'}
-    };
+    function setIncomes(results) {
+        let incomes = results;
+        return incomes;
+    }
 
-    fetch('http://flip2.engr.oregonstate.edu:3003/', {
-        method: 'post',
-        body: JSON.stringify(body),
-        headers: {'Content-Type': 'application/json'},
-    })
-        .then(res => {
-            const dest = fs.createWriteStream('./public/img/chart.png');
-            res.body.pipe(dest);
+    // Gathering income labels from DB
+     function getIncomeData () {
+        query = 'SELECT `label`, `amount` FROM `Income`';
+        sql = mysql.pool.query(query, async function(error, results, fields) {
+            if(error) {
+                res.write(JSON.stringify(error));
+                res.end();
+            } else {
+                await makeChart(setIncomes(results));
+            }
         })
-        .catch(err => console.error(err));
 
-    res.render('index');
+    }
+    getIncomeData();
+
+    function makeChart (incomes) {
+        let newRow = [];
+        let iterateRow = () => {
+            for (let i in incomes) {
+                newRow.push({ name: `${incomes[i]['label']}`, value: `${incomes[i]['amount']}` });
+            }
+            console.log(newRow);
+            return newRow;
+        }
+        iterateRow();
+        const body = {
+            column: [
+                { type: "string", title: "total income" },
+                { type: "number", title: "Dollars" },
+            ],
+            row: newRow,
+            option: { title: 'Total Income', width: '300', height: '400'}
+        };
+
+        fetch('http://flip2.engr.oregonstate.edu:3003/', {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(res => {
+                const dest = fs.createWriteStream('./public/img/chart.png');
+                res.body.pipe(dest);
+            })
+            .then( () => { res.render('index');})
+            .catch(err => console.error(err));
+    }
 });
-
 
 app.post('/income', function (req, res) {
   let query = "INSERT INTO `Income` (`label`, `amount`) VALUES (?, ?)";
@@ -95,8 +113,25 @@ app.post('/income', function (req, res) {
   })
 })
 
+app.post('/expense', function (req, res) {
+    let query = "INSERT INTO `Expense` (`label`, `amount`) VALUES (?, ?)";
+    let inserts = [req.body.expenseLabel, req.body.expenseAmount];
+    sql = mysql.pool.query(query, inserts, function(error, results, fields) {
+        if(error) {
+            res.write(JSON.stringify(error));
+            res.end();
+        } else {
+            res.render('index');
+        }
+    })
+})
+
  app.get('/income/undo', function (req, res) {
   res.render('undoIncome');
+})
+
+app.get('/expense/undo', function (req, res) {
+    res.render('undoExpense');
 })
 
 //Error handling

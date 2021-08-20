@@ -1,8 +1,12 @@
 
 
 // Toggles between showing and hiding the content
-function dropDown() {
-    document.getElementById('dropdown-content').classList.toggle('show');
+function dropIncome() {
+    document.getElementById('incomeDropMenu').classList.toggle('show');
+}
+
+function dropExpense() {
+    document.getElementById('expenseDropMenu').classList.toggle('show');
 }
 
 // Closing the menu if the user clicks out
@@ -22,6 +26,11 @@ window.onclick = function(event) {
 let undoIncomeWindow;
 function undoIncome() {
     undoIncomeWindow = window.open('/income/undo' );
+}
+
+let undoExpenseWindow;
+function undoExpense() {
+    undoExpenseWindow = window.open('/expense/undo');
 }
 
 // Loading graph

@@ -1,6 +1,6 @@
-var mysql = require('mysql');
+const mysql = require('mysql');
 
-var pool = mysql.createPool({
+const pool = mysql.createPool({
 	host	:'classmysql.engr.oregonstate.edu',
 	user	:'cs361_parkd3',
 	password:'ReUzaa9CsVegJmXb',

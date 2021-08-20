@@ -3,14 +3,24 @@
 
 <!-- Top menu bar -->
 <div class="dropdown">
-    <button class="dropbtn" onclick="dropDown()">PayDay!</button>
-    <div class="dropdown-content" id="dropdown-content">
+    <button class="dropbtn" onclick="dropIncome()">Pay Day</button>
+    <div class="dropdown-content" id="incomeDropMenu">
         <form id="addIncome" action="/income" method="POST">
-            <label for="label">Label: </label>
+            <label for="incomeLabel">Label: </label>
             <input type="text" id="incomeLabel" name="incomeLabel">
-            <label for="payday-input">Put in your income here: </label>
+            <label for="incomeAmount">Income amount: </label>
             <input type="number" id="incomeAmount" name="incomeAmount">
             <button onclick="undoIncome()">Hooray!</button>
+        </form>
+    </div>
+    <button class="dropbtn" onclick="dropExpense()">Expenses</button>
+    <div class="dropdown-content" id="expenseDropMenu">
+        <form id="addExpense" action="/expense" method="POST">
+            <label for="expenseLabel">Label: </label>
+            <input type="text" id="expenseLabel" name="expenseLabel">
+            <label for="expenseAmount">Expense amount: </label>
+            <input type="number" id="expenseAmount" name="expenseAmount">
+            <button onclick="undoExpense()">Submit</button>
         </form>
     </div>
 </div>
