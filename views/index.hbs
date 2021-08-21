@@ -2,6 +2,7 @@
 <script src="/js/home.js"></script>
 
 <!-- Top menu bar -->
+<a href="/"><h1>Scrooge</h1></a>
 <div class="dropdown">
     <button class="dropbtn" onclick="dropIncome()">Pay Day</button>
     <div class="dropdown-content" id="incomeDropMenu">
@@ -10,7 +11,7 @@
             <input type="text" id="incomeLabel" name="incomeLabel">
             <label for="incomeAmount">Income amount: </label>
             <input type="number" id="incomeAmount" name="incomeAmount">
-            <button onclick="undoIncome()">Hooray!</button>
+            <button onclick="sucIncome()">Hooray!</button>
         </form>
     </div>
     <button class="dropbtn" onclick="dropExpense()">Expenses</button>
@@ -20,8 +21,25 @@
             <input type="text" id="expenseLabel" name="expenseLabel">
             <label for="expenseAmount">Expense amount: </label>
             <input type="number" id="expenseAmount" name="expenseAmount">
-            <button onclick="undoExpense()">Submit</button>
+            <button onclick="sucExpense()">Submit</button>
         </form>
+    </div>
+    <button class="dropbtn" onclick="dropGoal()">Goals</button>
+    <div class="dropdown-content" id="goalDropMenu">
+         <form id="addGoal" action="/goal" method="POST">
+            <fieldset>
+                <h3>New Goal:</h3>
+                <label for="goalLabel">Label: </label>
+                <input type="text" id="goalLabel" name="goalLabel">
+                <label for="goalAmount">Amount needed to save: </label>
+                <input type="number" id="goalAmount" name="goalAmount">
+                <button onclick="sucGoal()">Submit</button>
+            </fieldset>
+        </form>
+        <div id="goals">
+            <h3>Current Goals:</h3>
+            {{#each goalData}}<p>{{label}}</p>{{/each}}
+        </div>
     </div>
 </div>
 <br>

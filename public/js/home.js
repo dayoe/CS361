@@ -9,6 +9,10 @@ function dropExpense() {
     document.getElementById('expenseDropMenu').classList.toggle('show');
 }
 
+function dropGoal() {
+    document.getElementById('goalDropMenu').classList.toggle('show');
+}
+
 // Closing the menu if the user clicks out
 window.onclick = function(event) {
     if (!event.target.matches('.dropobtn')) {
@@ -23,14 +27,19 @@ window.onclick = function(event) {
 }
 
 // Undo option
-let undoIncomeWindow;
-function undoIncome() {
-    undoIncomeWindow = window.open('/income/undo' );
+let sucIncomeWindow;
+function sucIncome() {
+    sucIncomeWindow = window.open('/income/success');
 }
 
-let undoExpenseWindow;
-function undoExpense() {
-    undoExpenseWindow = window.open('/expense/undo');
+let sucExpenseWindow;
+function sucExpense() {
+    sucExpenseWindow = window.open('/expense/success');
+}
+
+let sucGoalWindow;
+function sucGoal() {
+    sucGoalWindow = window.open('/goal/success');
 }
 
 // Loading graph

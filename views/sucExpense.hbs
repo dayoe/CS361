@@ -1,0 +1,19 @@
+<div id="undoText">
+    <h1>Success! WINDOW WILL CLOSE IN TEN SECONDS</h1>
+    <br>
+    <p>Expense added successfully! Would you like to undo?</p>
+</div>
+<form action="/expense/undo" method="GET">
+    <button>I made a mistake!</button>
+    <button onclick="window.close()">Nah, I'm good</button>
+</form>
+
+<script>
+    function closeWindow() {
+        setTimeout(() => {
+            window.close();
+        }, 10000);
+    }
+
+    window.addEventListener('load', closeWindow)
+</script>

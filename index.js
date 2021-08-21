@@ -6,6 +6,8 @@ const handlebars = require('express-handlebars');
 const https = require('https');
 const fs = require('fs');
 const fetch = require('node-fetch');
+//const popup = require('popups'); TESTING BROWSERIFY
+
 
 //Creating module settings
 app.use(express.static('public'));
@@ -63,9 +65,33 @@ app.get('/', function(req, res) {
                 await makeChart(setIncomes(results));
             }
         })
-
     }
     getIncomeData();
+
+    // Getting Goal information
+    function getGoalData () {
+        query = 'SELECT * FROM `Goal`';
+        sql = mysql.pool.query(query, function(error, results, fields) {
+            if(error) {
+                res.write(JSON.stringify(error));
+                res.end();
+            } else {
+                let goalData = {
+                    label: [],
+                    amount: [],
+                    saved: []
+                };
+                for (let i in results) {
+                    goalData.label.push(results[i].label);
+                    goalData.amount.push(results[i].amount);
+                    goalData.saved.push(results[i].saved);
+                }
+                console.log(goalData);
+                console.log(results);
+                return goalData;
+            }
+        } )
+    }
 
     function makeChart (incomes) {
         let newRow = [];
@@ -95,7 +121,8 @@ app.get('/', function(req, res) {
                 const dest = fs.createWriteStream('./public/img/chart.png');
                 res.body.pipe(dest);
             })
-            .then( () => { res.render('index');})
+            .then( () => { getGoalData();})
+            .then( (goalData) => { console.log('goalData'); res.render('index', goalData);})
             .catch(err => console.error(err));
     }
 });
@@ -126,12 +153,62 @@ app.post('/expense', function (req, res) {
     })
 })
 
- app.get('/income/undo', function (req, res) {
-  res.render('undoIncome');
+app.post('/goal', function (req, res) {
+    let query = "INSERT INTO `Goal` (`label`, `amount`) VALUES (?, ?)";
+    let inserts = [req.body.goalLabel, req.body.goalAmount];
+    sql = mysql.pool.query(query, inserts, function(error, results, fields) {
+        if(error) {
+            res.write(JSON.stringify(error));
+            res.end();
+        } else {
+            res.render('index');
+        }
+    })
 })
 
+app.get('/income/success', function (req, res) {
+    res.render('sucIncome');
+})
+
+app.get('/expense/success', function (req, res) {
+    res.render('sucExpense');
+})
+
+app.get('/goal/success', function (req, res) {
+    res.render('sucGoal');
+})
+
+ app.get('/income/undo', function (req, res) {
+     let query = "DELETE FROM `Income` WHERE `id` in(SELECT MAX(id) FROM `Income`)";
+     sql = mysql.pool.query(query, function (error, results, fields) {
+         if(error) {
+             console.log(error);
+         } else {
+             res.send('Successfully undone! You may close this window.');
+         }
+     })
+ })
+
 app.get('/expense/undo', function (req, res) {
-    res.render('undoExpense');
+    let query = "DELETE FROM `Expense` WHERE `id` in(SELECT MAX(id) FROM `Expense`)";
+    sql = mysql.pool.query(query, function (error, results, fields) {
+        if(error) {
+            console.log(error);
+        } else {
+            res.send('Successfully undone! You may close this window.');
+        }
+    })
+})
+
+app.get('/goal/undo', function (req, res) {
+    let query = "DELETE FROM `Goal` WHERE `id` in(SELECT MAX(id) FROM `Goal`)";
+    sql = mysql.pool.query(query, function (error, results, fields) {
+        if(error) {
+            console.log(error);
+        } else {
+            res.send('Successfully undone! You may close this window.');
+        }
+    })
 })
 
 //Error handling
