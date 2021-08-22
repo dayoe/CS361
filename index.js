@@ -49,57 +49,63 @@ app.get('/', function(req, res) {
 
      */
 
-    function setIncomes(results) {
-        let incomes = results;
-        return incomes;
-    }
 
     // Gathering income labels from DB
      function getIncomeData () {
         query = 'SELECT `label`, `amount` FROM `Income`';
-        sql = mysql.pool.query(query, async function(error, results, fields) {
-            if(error) {
-                res.write(JSON.stringify(error));
-                res.end();
-            } else {
-                await makeChart(setIncomes(results));
-            }
+        sql = new Promise((resolve, reject) => {
+            mysql.pool.query(query, function (error, results, fields) {
+                if (error) {
+                    res.write(JSON.stringify(error));
+                    res.end();
+                } else {
+                    let incomeData = results;
+                    resolve(incomeData);
+                }
+            })
         })
-    }
-    getIncomeData();
+            .then((incomeData) => makeBody(incomeData))
+            .then((body) => makeChart(body))
+            .catch((err) => console.log(err))
+     }
+     getIncomeData();
 
     // Getting Goal information
     function getGoalData () {
         query = 'SELECT * FROM `Goal`';
-        sql = mysql.pool.query(query, function(error, results, fields) {
-            if(error) {
-                res.write(JSON.stringify(error));
-                res.end();
-            } else {
-                let goalData = {
-                    label: [],
-                    amount: [],
-                    saved: []
-                };
-                for (let i in results) {
-                    goalData.label.push(results[i].label);
-                    goalData.amount.push(results[i].amount);
-                    goalData.saved.push(results[i].saved);
+        sql = new Promise((resolve, reject) => {
+            mysql.pool.query(query, function(error, results, fields) {
+                if(error) {
+                    res.write(JSON.stringify(error));
+                    res.end();
+                } else {
+                    let goalData = {
+                        label: [],
+                        amount: [],
+                        saved: []
+                    };
+                    for (let i in results) {
+                        goalData.label.push(results[i].label);
+                        goalData.amount.push(results[i].amount);
+                        goalData.saved.push(results[i].saved);
+                    }
+                    console.log('goalData: ' + JSON.stringify(goalData));
+                    console.log('results: ' + JSON.stringify(results));
+                    resolve(goalData);
                 }
-                console.log(goalData);
-                console.log(results);
-                return goalData;
-            }
-        } )
+            } )
+        })
+            .then((goalData) => res.render('index', goalData))
+            .catch(err => console.log(err))
     }
+    getGoalData();
 
-    function makeChart (incomes) {
+    function makeBody (incomes) {
         let newRow = [];
         let iterateRow = () => {
             for (let i in incomes) {
                 newRow.push({ name: `${incomes[i]['label']}`, value: `${incomes[i]['amount']}` });
             }
-            console.log(newRow);
             return newRow;
         }
         iterateRow();
@@ -111,7 +117,10 @@ app.get('/', function(req, res) {
             row: newRow,
             option: { title: 'Total Income', width: '300', height: '400'}
         };
+        return body;
+    }
 
+    let makeChart = (body) => {
         fetch('http://flip2.engr.oregonstate.edu:3003/', {
             method: 'post',
             body: JSON.stringify(body),
@@ -121,10 +130,26 @@ app.get('/', function(req, res) {
                 const dest = fs.createWriteStream('./public/img/chart.png');
                 res.body.pipe(dest);
             })
-            .then( () => { getGoalData();})
-            .then( (goalData) => { console.log('goalData'); res.render('index', goalData);})
-            .catch(err => console.error(err));
     }
+
+    let testData = {};
+    testData.label = ['God Please WORK', 'pretty please?'];
+    /*
+    const promise = new Promise((resolve, reject) => {
+        let incomeData = getIncomeData();
+        resolve(incomeData);
+    })
+        //.then(results => setIncomes(results))
+        //.then(incomeData => {
+        //    return makeBody(incomeData);
+        //})
+        //.then(results => makeChart(results))
+        .then( () => getGoalData())
+        .then( (goalData) => res.render('index', testData))
+        .catch(err => console.error(err));
+
+     */
+
 });
 
 app.post('/income', function (req, res) {

@@ -38,7 +38,9 @@
         </form>
         <div id="goals">
             <h3>Current Goals:</h3>
-            {{#each goalData}}<p>{{label}}</p>{{/each}}
+            {{#each goalData}}
+                <p><h3>{{label}}: </h3>{{amount}} dollars saved out of {{saved}}</p>
+            {{/each}}
         </div>
     </div>
 </div>
@@ -47,3 +49,8 @@
 <div class="graph">
     <img id="graph" src=""/>
 </div>
+<p>thar should be labels below</p>
+{{#each label}}
+    <p>{{this}}</p>
+{{/each}}
+
