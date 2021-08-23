@@ -23,8 +23,97 @@ app.set('port', 3031);
 app.set('view engine', '.hbs')
 app.set('mysql', mysql)
 
+// Custom middleware
+var getIncomeData = function(req, res, next) {
+    query = 'SELECT `label`, `amount` FROM `Income`';
+    mysql.pool.query(query, function (error, results, fields) {
+        if (error) {
+            res.write(JSON.stringify(error));
+            res.end();
+        } else {
+            req.body.incomeData = results;
+            //console.log('req.body: ' + JSON.stringify(req.body));
+            next();
+        }
+    })
+}
+
+var getGoalData = function(req, res, next) {
+    query = 'SELECT * FROM `Goal`';
+    mysql.pool.query(query, function(error, results, fields) {
+        if(error) {
+            res.write(JSON.stringify(error));
+            res.end();
+        } else {
+            req.body.goals = [];
+            for (let i in results) {
+                req.body.goals[i] = {
+                    label: results[i].label,
+                    amount: results[i].amount,
+                    saved: results[i].saved
+                }
+            }
+            console.log('req.body.goals: ' + JSON.stringify(req.body.goals));
+            //console.log('results: ' + JSON.stringify(results));
+            next();
+        }
+    })
+}
+
+
+var makeBody = function(req, res, next) {
+    //console.log('making body');
+    let newRow = [];
+    let iterateRow = () => {
+        for (let i in req.body.incomeData) {
+            newRow.push({ name: `${req.body.incomeData[i]['label']}`, value: `${req.body.incomeData[i]['amount']}` });
+        }
+        //console.log('newRow: ' + JSON.stringify(newRow));
+        return newRow;
+    }
+    iterateRow();
+    const body = {
+        column: [
+            { type: "string", title: "total income" },
+            { type: "number", title: "Dollars" },
+        ],
+        row: newRow,
+        option: { title: 'Total Income', width: '700', height: '700'}
+    };
+    req.body.bodyData = body;
+    next();
+}
+
+var makeChart = function(req, res, next) {
+    fetch('http://flip2.engr.oregonstate.edu:3003/', {
+        method: 'post',
+        body: JSON.stringify(req.body.bodyData),
+        headers: {'Content-Type': 'application/json'},
+    })
+        .then(res => {
+            const dest = fs.createWriteStream('./public/img/chart.png');
+            res.body.pipe(dest);
+            next();
+        })
+}
+
+var makeBar = function(req, res, next) {
+    fetch('http://flip2.engr.oregonstate.edu:3003/bar', {
+        method: 'post',
+        body: JSON.stringify(req.body.goals),
+        headers: { 'Content-Type': 'application/json'},
+    })
+        .then(res => {
+            const dest = fs.createWriteStream('./public/img/bar.png');
+            res.body.pipe(dest);
+            next();
+        })
+}
+
 // Routing
-app.get('/', function(req, res) {
+var chart = [getIncomeData, makeBody, makeChart, getGoalData]; //, makeBar
+app.get('/', chart, function(req, res) {
+    res.render('index', req.body.goals);
     /*
     // Gathering income amounts from DB
     async function getIncomes() {
@@ -53,7 +142,7 @@ app.get('/', function(req, res) {
     let context = {
         goals: [],
     }
-
+/*
     // Gathering income labels from DB
      function getIncomeData () {
         query = 'SELECT `label`, `amount` FROM `Income`';
@@ -73,6 +162,8 @@ app.get('/', function(req, res) {
             .catch((err) => console.log(err))
      }
      getIncomeData();
+
+ */
 
     /*
     // Getting background image
@@ -111,8 +202,8 @@ app.get('/', function(req, res) {
             .then((goalData) => res.render('index', goalData))
             .catch(err => console.log(err))
     }
-    getGoalData();
-
+    //getGoalData();
+/*
     function makeBody (incomes) {
         let newRow = [];
         let iterateRow = () => {
@@ -145,6 +236,8 @@ app.get('/', function(req, res) {
             })
     }
 
+ */
+
     /*
     const promise = new Promise((resolve, reject) => {
         let incomeData = getIncomeData();
@@ -167,12 +260,12 @@ app.post('/income', function (req, res) {
   let query = "INSERT INTO `Income` (`label`, `amount`) VALUES (?, ?)";
   let inserts = [req.body.incomeLabel, req.body.incomeAmount];
   sql = mysql.pool.query(query, inserts, function(error, results, fields) {
-    if(error) {
-      res.write(JSON.stringify(error));
-      res.end();
-    } else {
-      res.render('index');
-    }
+      if(error) {
+          res.write(JSON.stringify(error));
+          res.end();
+      } else {
+          res.redirect('/');
+      }
   })
 })
 

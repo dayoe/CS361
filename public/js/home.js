@@ -53,3 +53,14 @@ function sucGoal() {
 window.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('graph').src = './img/chart.png';
 })
+
+/*
+// Switching charts
+function changeChart() {
+    let chart = document.getElementById('graph');
+    if (chart.src == './img/chart.png') {
+        chart.src = './img/'
+    }
+}
+
+ */
