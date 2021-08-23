@@ -1,4 +1,11 @@
+// Placeholder for getting image
+/*
+window.onload = () => {
+    fetch('dummy_url')
+        .then
+}
 
+ */
 
 // Toggles between showing and hiding the content
 function dropIncome() {

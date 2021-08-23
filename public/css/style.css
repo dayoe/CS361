@@ -1,3 +1,18 @@
+/* Setting background */
+.background {
+    position: relative;
+}
+
+.bgImage {
+    opacity: 0.5;
+    filter: brightness(50%);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+}
+
 /* Dropdown Button */
 .dropbtn {
     background-color: #04AA6D;

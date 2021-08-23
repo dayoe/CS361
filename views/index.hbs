@@ -1,56 +1,73 @@
 <!-- Loading javascript file -->
 <script src="/js/home.js"></script>
 
+<!-- Setting background image -->
+<!--
+<style>
+    #background {
+        position: relative;
+        background-image: url("/img/IMG_0165.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        /*opacity: 0;
+        /*background-color: ; */
+    }
+</style>
+-->
+
 <!-- Top menu bar -->
-<a href="/"><h1>Scrooge</h1></a>
-<div class="dropdown">
-    <button class="dropbtn" onclick="dropIncome()">Pay Day</button>
-    <div class="dropdown-content" id="incomeDropMenu">
-        <form id="addIncome" action="/income" method="POST">
-            <label for="incomeLabel">Label: </label>
-            <input type="text" id="incomeLabel" name="incomeLabel">
-            <label for="incomeAmount">Income amount: </label>
-            <input type="number" id="incomeAmount" name="incomeAmount">
-            <button onclick="sucIncome()">Hooray!</button>
-        </form>
-    </div>
-    <button class="dropbtn" onclick="dropExpense()">Expenses</button>
-    <div class="dropdown-content" id="expenseDropMenu">
-        <form id="addExpense" action="/expense" method="POST">
-            <label for="expenseLabel">Label: </label>
-            <input type="text" id="expenseLabel" name="expenseLabel">
-            <label for="expenseAmount">Expense amount: </label>
-            <input type="number" id="expenseAmount" name="expenseAmount">
-            <button onclick="sucExpense()">Submit</button>
-        </form>
-    </div>
-    <button class="dropbtn" onclick="dropGoal()">Goals</button>
-    <div class="dropdown-content" id="goalDropMenu">
-         <form id="addGoal" action="/goal" method="POST">
-            <fieldset>
-                <h3>New Goal:</h3>
-                <label for="goalLabel">Label: </label>
-                <input type="text" id="goalLabel" name="goalLabel">
-                <label for="goalAmount">Amount needed to save: </label>
-                <input type="number" id="goalAmount" name="goalAmount">
-                <button onclick="sucGoal()">Submit</button>
-            </fieldset>
-        </form>
-        <div id="goals">
-            <h3>Current Goals:</h3>
-            {{#each goalData}}
-                <p><h3>{{label}}: </h3>{{amount}} dollars saved out of {{saved}}</p>
-            {{/each}}
+<div class="background">
+    <img class="bgImage" src="/img/IMG_0165.jpg"/>
+    <a href="/"><h1>Scrooge</h1></a>
+    <div class="dropdown">
+        <button class="dropbtn" onclick="dropIncome()">Pay Day</button>
+        <div class="dropdown-content" id="incomeDropMenu">
+            <form id="addIncome" action="/income" method="POST">
+                <label for="incomeLabel">Label: </label>
+                <input type="text" id="incomeLabel" name="incomeLabel">
+                <label for="incomeAmount">Income amount: </label>
+                <input type="number" id="incomeAmount" name="incomeAmount">
+                <button onclick="sucIncome()">Hooray!</button>
+            </form>
+        </div>
+        <button class="dropbtn" onclick="dropExpense()">Expenses</button>
+        <div class="dropdown-content" id="expenseDropMenu">
+            <form id="addExpense" action="/expense" method="POST">
+                <label for="expenseLabel">Label: </label>
+                <input type="text" id="expenseLabel" name="expenseLabel">
+                <label for="expenseAmount">Expense amount: </label>
+                <input type="number" id="expenseAmount" name="expenseAmount">
+                <button onclick="sucExpense()">Submit</button>
+            </form>
+        </div>
+        <button class="dropbtn" onclick="dropGoal()">Goals</button>
+        <div class="dropdown-content" id="goalDropMenu">
+            <form id="addGoal" action="/goal" method="POST">
+                <fieldset>
+                    <h3>New Goal:</h3>
+                    <label for="goalLabel">Label: </label><br>
+                    <input type="text" id="goalLabel" name="goalLabel"><br>
+                    <label for="goalAmount">Amount needed to save: </label>
+                    <input type="number" id="goalAmount" name="goalAmount">
+                    <button onclick="sucGoal()">Submit</button>
+                </fieldset>
+            </form>
+            <div id="goals">
+                <h3>Current Goals:</h3>
+                {{#each goals}}
+                    <p><h4>{{this.label}}: </h4>{{this.saved}} dollars saved out of {{this.amount}}</p>
+                {{/each}}
+            </div>
         </div>
     </div>
+    <br>
+    <br>
+    <div class="graph">
+        <img id="graph" src="" style="position: relative; background-color: transparent"/>
+    </div>
 </div>
-<br>
-<br>
-<div class="graph">
-    <img id="graph" src=""/>
-</div>
-<p>thar should be labels below</p>
-{{#each label}}
-    <p>{{this}}</p>
-{{/each}}
+
+<script>
+    console.log({{goalData}});
+</script>
 

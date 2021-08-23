@@ -9,7 +9,7 @@ const fetch = require('node-fetch');
 //const popup = require('popups'); TESTING BROWSERIFY
 
 
-//Creating module settings
+// Setting up middleware
 app.use(express.static('public'));
 app.engine('.hbs', handlebars({
     extname: ".hbs"
@@ -17,6 +17,8 @@ app.engine('.hbs', handlebars({
 app.use(express.json());
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: true}));
+
+// Settings
 app.set('port', 3031);
 app.set('view engine', '.hbs')
 app.set('mysql', mysql)
@@ -48,7 +50,9 @@ app.get('/', function(req, res) {
     //console.log(income);
 
      */
-
+    let context = {
+        goals: [],
+    }
 
     // Gathering income labels from DB
      function getIncomeData () {
@@ -70,6 +74,18 @@ app.get('/', function(req, res) {
      }
      getIncomeData();
 
+    /*
+    // Getting background image
+    let getBgImage = () => {
+        fetch('dummy_url')
+            .then(res => context.bg = res)
+            .then(() => getGoalData())
+            .catch(err => console.log(err))
+    }
+    getBgImage();
+
+     */
+
     // Getting Goal information
     function getGoalData () {
         query = 'SELECT * FROM `Goal`';
@@ -79,19 +95,16 @@ app.get('/', function(req, res) {
                     res.write(JSON.stringify(error));
                     res.end();
                 } else {
-                    let goalData = {
-                        label: [],
-                        amount: [],
-                        saved: []
-                    };
                     for (let i in results) {
-                        goalData.label.push(results[i].label);
-                        goalData.amount.push(results[i].amount);
-                        goalData.saved.push(results[i].saved);
+                        context.goals[i] = {
+                            label: results[i].label,
+                            amount: results[i].amount,
+                            saved: results[i].saved
+                        }
                     }
-                    console.log('goalData: ' + JSON.stringify(goalData));
-                    console.log('results: ' + JSON.stringify(results));
-                    resolve(goalData);
+                    //console.log('goalData: ' + JSON.stringify(goalData));
+                    //console.log('results: ' + JSON.stringify(results));
+                    resolve(context);
                 }
             } )
         })
@@ -115,7 +128,7 @@ app.get('/', function(req, res) {
                 { type: "number", title: "Dollars" },
             ],
             row: newRow,
-            option: { title: 'Total Income', width: '300', height: '400'}
+            option: { title: 'Total Income', width: '700', height: '700'}
         };
         return body;
     }
@@ -132,8 +145,6 @@ app.get('/', function(req, res) {
             })
     }
 
-    let testData = {};
-    testData.label = ['God Please WORK', 'pretty please?'];
     /*
     const promise = new Promise((resolve, reject) => {
         let incomeData = getIncomeData();
@@ -186,7 +197,7 @@ app.post('/goal', function (req, res) {
             res.write(JSON.stringify(error));
             res.end();
         } else {
-            res.render('index');
+            res.redirect('/');
         }
     })
 })
