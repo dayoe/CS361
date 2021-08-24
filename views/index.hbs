@@ -23,11 +23,15 @@
         <button class="dropbtn" onclick="dropIncome()">Pay Day</button>
         <div class="dropdown-content" id="incomeDropMenu">
             <form id="addIncome" action="/income" method="POST">
-                <label for="incomeLabel">Label: </label>
-                <input type="text" id="incomeLabel" name="incomeLabel">
-                <label for="incomeAmount">Income amount: </label>
+                <label for="incomeLabel">Label: </label><br>
+                <input type="text" id="incomeLabel" name="incomeLabel"><br>
+                <label for="incomeAmount">Income amount: </label><br>
                 <input type="number" id="incomeAmount" name="incomeAmount">
                 <button onclick="sucIncome()">Hooray!</button>
+                <div class="tooltip">
+                    <p>Add money that you've earned here. Make a label that is fitting and enter in the amount above</p>
+                    <p>Don't worry if you make a mistake, there is an option to undo</p>
+                </div>
             </form>
         </div>
         <button class="dropbtn" onclick="dropExpense()">Expenses</button>
@@ -39,6 +43,11 @@
                 <input type="number" id="expenseAmount" name="expenseAmount">
                 <button onclick="sucExpense()">Submit</button>
             </form>
+            <div class="tooltip">
+                <p>Here is where you enter your expenses. Make a label appropriate to the expense and the amount will be
+                    reduced from your current income.</p>
+                <p>Don't worry if you make a mistake, there is an option to undo</p>
+            </div>
         </div>
         <button class="dropbtn" onclick="dropGoal()">Goals</button>
         <div class="dropdown-content" id="goalDropMenu">
@@ -52,6 +61,11 @@
                     <button onclick="sucGoal()">Submit</button>
                 </fieldset>
             </form>
+            <div class="tooltip">
+                <p>This is where the new goals go. Enter the name of a new goal, like "Trip to Italy" or "New car". Then enter
+                    in the amount that you would like to save.</p>
+                <p>Don't worry if you make a mistake, there is an option to undo</p>
+            </div>
             <div id="goals">
                 <h3>Current Goals:</h3>
                 {{#each goals}}
@@ -62,9 +76,16 @@
     </div>
     <br>
     <br>
+    <div>
+        <p id="tutText"></p>
+        <button onclick="tutorial()">Tutorial</button>
+    </div>
     <div class="graph">
-        <img id="graph" src="" style="position: relative; background-color: transparent"/>
+        <img id="graph" src="" style="position: relative;"/>
         <button onclick="changeChart()">switch chart</button>
+        <span class="tooltip">
+            <p>Click on "switch chart" to change the chart view</p>
+        </span>
     </div>
 </div>
 

@@ -11,6 +11,38 @@
     top: 0;
     width: 100%;
     height: auto;
+    z-index: -1;
+}
+
+/* Tooltips */
+.tooltip {
+    position: relative;
+    text-align: center;
+    background-color: #70b655;
+    color: #fff;
+    border-radius: 100%;
+    width: 18px;
+    height: 18px;
+    padding: 5px 12px;
+}
+
+.tooltip:before {
+    content: '?';
+    font-weight: bold;
+}
+
+.tooltip:hover p{
+    display:block;
+}
+
+.tooltip p{
+    display: none;
+    background-color: #1d1d1d;
+    padding: 20px;
+    width: 300px;
+}
+
+.tooltip p:before{
 }
 
 /* Dropdown Button */

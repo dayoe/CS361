@@ -6,7 +6,6 @@ const handlebars = require('express-handlebars');
 const https = require('https');
 const fs = require('fs');
 const fetch = require('node-fetch');
-//const popup = require('popups'); TESTING BROWSERIFY
 
 
 // Setting up middleware
@@ -38,6 +37,18 @@ var getIncomeData = function(req, res, next) {
     })
 }
 
+var getExpenseData = function(req, res, next) {
+    query = 'SELECT * FROM `Expense`';
+    mysql.pool.query(query, function (error, results, fields) {
+        if (error) {
+            res.write(JSON.stringify(error));
+            res.end();
+        } else {
+            req.body.expenseData = results;
+            next();
+        }
+    })
+}
 var getGoalData = function(req, res, next) {
     query = 'SELECT * FROM `Goal`';
     mysql.pool.query(query, function(error, results, fields) {
@@ -60,9 +71,37 @@ var getGoalData = function(req, res, next) {
     })
 }
 
+var makeAltBody = function(req, res, next) {
+    let total = 0;
+    for (let i in req.body.incomeData) {
+        total += req.body.incomeData[i]['amount']
+    }
+
+    let expenses = 0;
+    for (let j in req.body.expenseData) {
+        expenses += req.body.expenseData[j]['amount']
+    }
+
+    let remainingIncome = total - expenses;
+    let newRow = [];
+    for (let k in req.body.expenseData) {
+        newRow.push({ name: `${req.body.expenseData[k]['label']}`, value: `${req.body.expenseData[k]['amount']}` });
+    }
+    newRow.push({name: 'Remaining Income', value: `${remainingIncome}`});
+    const body = {
+        column: [
+            { type: "string", title: "Expense Breakdown" },
+            { type: "number", title: "Dollars" },
+        ],
+        row: newRow,
+        option: { title: 'Expense Breakdown', width: '700', height: '700'}
+    };
+    req.body.bodyData = body;
+    req.body.chartType = 'expenses';
+    next();
+}
 
 var makeBody = function(req, res, next) {
-    //console.log('making body');
     let newRow = [];
     let iterateRow = () => {
         for (let i in req.body.incomeData) {
@@ -81,17 +120,19 @@ var makeBody = function(req, res, next) {
         option: { title: 'Total Income', width: '700', height: '700'}
     };
     req.body.bodyData = body;
+    req.body.chartType = 'incomes';
     next();
 }
 
 var makeChart = function(req, res, next) {
+    console.log(JSON.stringify(req.body.bodyData));
     fetch('http://flip2.engr.oregonstate.edu:3003/', {
         method: 'post',
         body: JSON.stringify(req.body.bodyData),
         headers: {'Content-Type': 'application/json'},
     })
         .then(res => {
-            const dest = fs.createWriteStream('./public/img/chart.png');
+            const dest = fs.createWriteStream(`./public/img/${req.body.chartType}.png`);
             res.body.pipe(dest);
             next();
         })
@@ -111,149 +152,10 @@ var makeBar = function(req, res, next) {
 }
 
 // Routing
-var chart = [getIncomeData, makeBody, makeChart, getGoalData]; //, makeBar
-app.get('/', chart, function(req, res) {
+var chart = [getIncomeData, getExpenseData, makeBody, makeChart, makeAltBody, makeChart, getGoalData]; //, makeBar
+var test = [getIncomeData,] ;
+app.get('/', chart, function(req, res) { // chart,
     res.render('index', req.body.goals);
-    /*
-    // Gathering income amounts from DB
-    async function getIncomes() {
-        let query = 'SELECT `label`, `amount` FROM `Income`';
-        let income = [];
-        return new Promise((resolve, reject) => {
-            mysql.pool.query(query, function(error, results) {
-            if (error) {
-                reje
-            }
-        })
-
-            if(error) {
-                res.write(JSON.stringify(error));
-                res.end();
-            } else {
-                setIncomes(results);
-                //console.log(results);
-            }
-        });
-    }
-    getIncomes();
-    //console.log(income);
-
-     */
-    let context = {
-        goals: [],
-    }
-/*
-    // Gathering income labels from DB
-     function getIncomeData () {
-        query = 'SELECT `label`, `amount` FROM `Income`';
-        sql = new Promise((resolve, reject) => {
-            mysql.pool.query(query, function (error, results, fields) {
-                if (error) {
-                    res.write(JSON.stringify(error));
-                    res.end();
-                } else {
-                    let incomeData = results;
-                    resolve(incomeData);
-                }
-            })
-        })
-            .then((incomeData) => makeBody(incomeData))
-            .then((body) => makeChart(body))
-            .catch((err) => console.log(err))
-     }
-     getIncomeData();
-
- */
-
-    /*
-    // Getting background image
-    let getBgImage = () => {
-        fetch('dummy_url')
-            .then(res => context.bg = res)
-            .then(() => getGoalData())
-            .catch(err => console.log(err))
-    }
-    getBgImage();
-
-     */
-
-    // Getting Goal information
-    function getGoalData () {
-        query = 'SELECT * FROM `Goal`';
-        sql = new Promise((resolve, reject) => {
-            mysql.pool.query(query, function(error, results, fields) {
-                if(error) {
-                    res.write(JSON.stringify(error));
-                    res.end();
-                } else {
-                    for (let i in results) {
-                        context.goals[i] = {
-                            label: results[i].label,
-                            amount: results[i].amount,
-                            saved: results[i].saved
-                        }
-                    }
-                    //console.log('goalData: ' + JSON.stringify(goalData));
-                    //console.log('results: ' + JSON.stringify(results));
-                    resolve(context);
-                }
-            } )
-        })
-            .then((goalData) => res.render('index', goalData))
-            .catch(err => console.log(err))
-    }
-    //getGoalData();
-/*
-    function makeBody (incomes) {
-        let newRow = [];
-        let iterateRow = () => {
-            for (let i in incomes) {
-                newRow.push({ name: `${incomes[i]['label']}`, value: `${incomes[i]['amount']}` });
-            }
-            return newRow;
-        }
-        iterateRow();
-        const body = {
-            column: [
-                { type: "string", title: "total income" },
-                { type: "number", title: "Dollars" },
-            ],
-            row: newRow,
-            option: { title: 'Total Income', width: '700', height: '700'}
-        };
-        return body;
-    }
-
-    let makeChart = (body) => {
-        fetch('http://flip2.engr.oregonstate.edu:3003/', {
-            method: 'post',
-            body: JSON.stringify(body),
-            headers: {'Content-Type': 'application/json'},
-        })
-            .then(res => {
-                const dest = fs.createWriteStream('./public/img/chart.png');
-                res.body.pipe(dest);
-            })
-    }
-
- */
-
-    /*
-    const promise = new Promise((resolve, reject) => {
-        let incomeData = getIncomeData();
-        resolve(incomeData);
-    })
-        //.then(results => setIncomes(results))
-        //.then(incomeData => {
-        //    return makeBody(incomeData);
-        //})
-        //.then(results => makeChart(results))
-        .then( () => getGoalData())
-        .then( (goalData) => res.render('index', testData))
-        .catch(err => console.error(err));
-
-     */
-
 });
 
 app.post('/income', function (req, res) {
